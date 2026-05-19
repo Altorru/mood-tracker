@@ -1,51 +1,58 @@
-## Projet
-Application Next.js 15 de suivi d'humeur quotidienne.
-Stack : Next.js 15, TypeScript strict, Tailwind CSS, localStorage.
-Développeur : Hugo Viaud — étudiant CESI, projet personnel.
+# mood-tracker — Contexte projet OpenCode
 
-## Architecture cible
+## Stack
+
+- Next.js 15 (App Router), React 19.x, TypeScript strict
+- Tailwind CSS, chart.js v4 + react-chartjs-2 v5 (compatibles React 19)
+- localStorage pour persistance
+
+## Structure réelle du projet
+
+```
+app/
+├── page.tsx                    — Page principale
+├── layout.tsx
+├── globals.css
+└── components/
+    ├── MoodTracker.tsx         — Formulaire saisie humeur
+    └── ChartHistory.tsx        — Graphique historique
 src/
-app/           — App Router Next.js
-components/    — Composants React réutilisables
-MoodEntry/   — Formulaire saisie humeur
-MoodHistory/ — Historique des entrées
-MoodChart/   — Graphiques (recharts ou chart.js)
-lib/           — Utilitaires, hooks, types
-types/         — Interfaces TypeScript
-
-## Modèles disponibles par rôle
-- Orchestrateur/défaut : lmstudio/qwen/qwen3-14b
-- Coder (implémentation) : /agent coder → Devstral
-- Scout (analyse) : /agent scout → Qwen3.5 9B  
-- Reviewer (qualité) : /agent reviewer → Gemini Flash
-
-## Workflow recommandé
-1. Demande complexe → orchestrateur analyse et décompose
-2. Implémentation → passe en mode coder avec /agent coder
-3. Après code → review avec /agent reviewer
-4. Pour chercher des exemples → use gh_grep
-5. Pour les docs Next.js/React → use context7
-
-## Conventions de code
-- TypeScript strict, `noImplicitAny: true`
-- Composants : PascalCase, fichier = nom du composant
-- Hooks custom dans lib/hooks/
-- Types dans types/index.ts
-- Pas de CSS inline, Tailwind uniquement
-- Commentaires en français
-
-## Commandes utiles
-```bash
-npm run dev      # Démarrage dev
-npm run build    # Build production
-npm run lint     # Lint
-npm run type-check  # Vérif TypeScript
-npm run format    # Prettier
-npm run format:check  # Vérif Prettier
+└── utils/
+    ├── moodHistory.ts
+    ├── moodScore.ts
+    └── moodScore.test.ts
+public/
+package.json
 ```
 
-## À ne jamais faire
-- Utiliser `any` en TypeScript
-- Toucher node_modules
-- Commiter les fichiers .env
-- Utiliser des composants classes React
+## Types de données
+
+```typescript
+interface MoodEntry {
+  date: string;   // ISO string
+  mood: string;   // "1" à "10"
+  note?: string;  // optionnel
+}
+```
+
+## Conventions
+
+- TypeScript strict, zéro `any`
+- Composants fonctionnels React
+- Tailwind CSS uniquement, pas de CSS inline
+- Commentaires en français
+
+## Dépendances charts
+
+| Paquet             | Version | Statut              |
+|--------------------|---------|---------------------|
+| chart.js           | 4.5.1   | ✅ compatible React 19 |
+| react-chartjs-2    | 5.3.1   | ✅ compatible React 19 |
+| recharts           | < 3.x   | ❌ incompatible React 19 — NE PAS installer |
+
+## Workflow
+
+1. **Scout** — lire `app/components/` avant chaque modification
+2. **Coder** (Gemini Flash) — pour les rewrites complets
+3. **Reviewer** — après chaque feature ajoutée
+4. **Lint + typecheck** — après chaque session
